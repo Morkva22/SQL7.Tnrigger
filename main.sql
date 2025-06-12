@@ -1,7 +1,6 @@
 USE master
 GO;
 
--- Check if the database exists
 IF DB_ID('SportsShop') IS NOT NULL
     DROP DATABASE SportsShop
 
@@ -14,206 +13,167 @@ GO
 USE SportsShop
 GO;
 
+-- Create a table with employees
+CREATE TABLE Employees (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    FullName NVARCHAR(256) NOT NULL UNIQUE,
+    DateOfHire DATE NOT NULL,
+    Sex BINARY NOT NULL,
+    Salary INT NOT NULL DEFAULT (0),
 
-CREATE TABLE products (
-                product_id INT PRIMARY KEY,
-                product_name nvarchar(100) NOT NULL,
-                product_type nvarchar(50) NOT NULL,
-                quantity INT NOT NULL,
-                cost DECIMAL(10,2) NOT NULL,
-                manufacturer nvarchar(100) NOT NULL,
-                price DECIMAL(10,2) NOT NULL
-            );
+    CONSTRAINT CHK_Employees_FullName CHECK (FullName <> ''),
+    CONSTRAINT CHK_Employees_Salary CHECK (Salary >= 0)
+);
 
-            CREATE TABLE employees (
-                id INT PRIMARY KEY,
-                name nvarchar(100) NOT NULL,
-                position nvarchar(50) NOT NULL,
-                date DATE NOT NULL,
-                gender nvarchar(1) NOT NULL,
-                salary DECIMAL(10,2) NOT NULL
-            );
+-- Create a table with customers
+CREATE TABLE Customers (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    FullName NVARCHAR(256) NOT NULL UNIQUE,
+    Phone NVARCHAR(10) NOT NULL UNIQUE,
+    Email NVARCHAR(512) NOT NULL UNIQUE,
+    Sex BINARY NOT NULL,
+    OrderHistory NVARCHAR(MAX),
+    DiscountPercentage INT NOT NULL DEFAULT (0),
+    isSubscribed BINARY NOT NULL,
 
-            CREATE TABLE clients (
-                id INT PRIMARY KEY,
-                name nvarchar(100) NOT NULL,
-                email nvarchar(100),
-                phone nvarchar(20),
-                gender nvarchar(1),
-                discount INT,
-                newsletter nvarchar (3)
-            );
+    CONSTRAINT CHK_Customers_FullName CHECK (FullName <> ''),
+    CONSTRAINT CHK_Customers_Phone CHECK (LEN(Phone) = 10),
+    CONSTRAINT CHK_Customers_DiscountPercentage CHECK (DiscountPercentage >= 0 AND DiscountPercentage <= 100)
+);
 
-            CREATE TABLE sales (
-                id INT PRIMARY KEY,
-                product_id INT NOT NULL,
-                employee_id INT NOT NULL,
-                client_id INT,
-                price DECIMAL(10,2) NOT NULL,
-                quantity INT NOT NULL,
-                date DATE NOT NULL,
+-- Create a table with goods
+CREATE TABLE Goods (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Name NVARCHAR(256) NOT NULL,
+    Type NVARCHAR(100) NOT NULL,
+    Amount INT NOT NULL,
+    CostPrice INT NOT NULL,
+    Manufacturer NVARCHAR(MAX) NOT NULL,
+    SellingPrice INT NOT NULL,
 
-                FOREIGN KEY (product_id) REFERENCES products(product_id),
-                FOREIGN KEY (employee_id) REFERENCES employees(id),
-                FOREIGN KEY (client_id) REFERENCES clients(id)
-            );
+    CONSTRAINT CHK_Goods_Name CHECK (Name <> ''),
+    CONSTRAINT CHK_Goods_Type CHECK (Type <> ''),
+    CONSTRAINT CHK_Goods_Manufacturer CHECK (Manufacturer <> '')
+);
 
-            CREATE TABLE history (
-                history_id INT PRIMARY KEY,
-                product_id INT NOT NULL,
-                employee_id INT NOT NULL,
-                client_id INT,
-                price DECIMAL(10,2) NOT NULL,
-                quantity INT NOT NULL,
-                date DATE NOT NULL
-            );
+-- Create a table with sales
+CREATE TABLE Sales (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Name NVARCHAR(MAX) NOT NULL,
+    Price INT NOT NULL,
+    EmployeeId INT NOT NULL,
+    CustomerId INT NOT NULL,
 
-            CREATE TABLE archive (
-                id INT PRIMARY KEY,
-                name nvarchar(100) NOT NULL,
-                product nvarchar(50) NOT NULL,
-                cost DECIMAL(10,2) NOT NULL,
-                manufacturer nvarchar(100) NOT NULL,
-                sale DECIMAL(10,2) NOT NULL,
-                date DATE NOT NULL
-            );
+    CONSTRAINT CHK_Sales_Name CHECK (Name <> ''),
 
-            CREATE TABLE last_unit (
-                id INT PRIMARY KEY,
-                product_id INT NOT NULL,
-                name nvarchar(100) NOT NULL,
-                date DATE NOT NULL
-            );
+    CONSTRAINT FK_Sales_Employees FOREIGN KEY (EmployeeId) REFERENCES Employees(Id),
+    CONSTRAINT FK_Sales_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
+);
 
--- Products
-            INSERT INTO products VALUES
-            (1, N'Football', N'Sports', 50, 10.00, N'Adidas', 20.00),
-            (2, N'Tennis Racket', N'Tennis', 30, 35.00, N'Wilson', 60.00),
-            (3, N'Basketball', N'Sports', 40, 12.00, N'Spalding', 25.00),
-            (4, N'Running Shoes', N'Footwear', 20, 40.00, N'Nike', 80.00);
 
-            -- Employees
-            INSERT INTO employees VALUES
-            (1, N'John Doe', N'Salesman', '2020-01-15', N'M', 2500.00),
-            (2, N'Anna Ivanova', N'Cashier', '2018-03-10', N'F', 2200.00),
-            (3, N'Peter Brown', N'Manager', '2012-07-01', N'M', 4000.00);
 
-            -- Clients
-            INSERT INTO clients VALUES
-            (1, N'Jane Smith', N'jane.smith@email.com', N'555-1234', N'F', 5, N'yes'),
-            (2, N'Mark Lee', N'mark.lee@email.com', N'555-5678', N'M', 10, N'no'),
-            (3, N'Olga Petrova', N'olga.p@email.com', N'555-8765', N'F', 0, N'no');
+INSERT INTO Employees (FullName, DateOfHire, Sex, Salary) VALUES
+(N'John Smith', '2020-01-15', 1, 4000),
+(N'Emily Davis', '2019-03-22', 0, 4200),
+(N'Michael Brown', '2021-07-10', 1, 3900),
+(N'Sarah Wilson', '2018-11-05', 0, 4500),
+(N'David Lee', '2022-02-28', 1, 4100),
+(N'Jessica Miller', '2020-09-17', 0, 4300),
+(N'Chris Johnson', '2017-06-30', 1, 4700),
+(N'Laura Clark', '2019-12-12', 0, 4000),
+(N'James Lewis', '2021-04-03', 1, 3800),
+(N'Olivia Walker', '2022-08-19', 0, 4400);
 
-            -- Sales
-            INSERT INTO sales VALUES
-            (1, 1, 1, 1, 20.00, 2, '2024-06-01'),
-            (2, 2, 2, 2, 60.00, 1, '2024-06-02'),
-            (3, 3, 1, 3, 25.00, 3, '2024-06-03'),
-            (4, 4, 3, 1, 80.00, 1, '2024-06-04');
 
-            -- History (should be filled by trigger, but here are sample rows)
-            INSERT INTO history VALUES
-            (1, 1, 1, 1, 20.00, 2, '2024-06-01'),
-            (2, 2, 2, 2, 60.00, 1, '2024-06-02'),
-            (3, 3, 1, 3, 25.00, 3, '2024-06-03'),
-            (4, 4, 3, 1, 80.00, 1, '2024-06-04');
+INSERT INTO Customers (FullName, Phone, Email, Sex, OrderHistory, DiscountPercentage, isSubscribed) VALUES
+(N'Alice Green', N'1234567890', N'alice.green@email.com', 0, N'Football, Shoes', 10, 1),
+(N'Brian White', N'2345678901', N'brian.white@email.com', 1, N'Basketball', 5, 0),
+(N'Chloe Harris', N'3456789012', N'chloe.harris@email.com', 0, N'Yoga Mat, Gloves', 15, 1),
+(N'Daniel Young', N'4567890123', N'daniel.young@email.com', 1, N'Helmet', 0, 0),
+(N'Ella King', N'5678901234', N'ella.king@email.com', 0, N'Golf Clubs', 20, 1),
+(N'Frank Scott', N'6789012345', N'frank.scott@email.com', 1, N'Racket, Shoes', 8, 1),
+(N'Grace Adams', N'7890123456', N'grace.adams@email.com', 0, N'Goggles', 12, 0),
+(N'Henry Baker', N'8901234567', N'henry.baker@email.com', 1, N'Football', 0, 1),
+(N'Ivy Carter', N'9012345678', N'ivy.carter@email.com', 0, N'Basketball, Mat', 18, 1),
+(N'Jack Evans', N'0123456789', N'jack.evans@email.com', 1, N'Gloves', 7, 0);
 
-            -- Archive (example, normally filled by trigger)
-            INSERT INTO archive VALUES
-            (1, N'Football', N'Sports', 10.00, N'Adidas', 20.00, '2024-06-05'),
-            (2, N'Tennis Racket', N'Tennis', 35.00, N'Wilson', 60.00, '2024-06-06');
 
-            -- Last Unit (example, normally filled by trigger)
-            INSERT INTO last_unit VALUES
-            (1, 3, N'Basketball', '2024-06-07'),
-            (2, 4, N'Running Shoes', '2024-06-08');
+INSERT INTO Goods (Name, Type, Amount, CostPrice, Manufacturer, SellingPrice) VALUES
+(N'Football', N'Sports Equipment', 50, 20, N'Adidas', 35),
+(N'Tennis Racket', N'Sports Equipment', 30, 40, N'Wilson', 65),
+(N'Running Shoes', N'Footwear', 100, 60, N'Nike', 90),
+(N'Basketball', N'Sports Equipment', 40, 25, N'Spalding', 45),
+(N'Yoga Mat', N'Fitness', 70, 10, N'Reebok', 20),
+(N'Cycling Helmet', N'Accessories', 25, 30, N'Giro', 55),
+(N'Baseball Glove', N'Sports Equipment', 15, 35, N'Rawlings', 60),
+(N'Swimming Goggles', N'Accessories', 80, 8, N'Speedo', 18),
+(N'Golf Clubs', N'Sports Equipment', 10, 200, N'Callaway', 350),
+(N'Boxing Gloves', N'Fitness', 35, 22, N'Everlast', 40);
 
--- copy to history
-            CREATE TRIGGER afterSale
-            ON sales
-            AFTER INSERT
-            AS
-            BEGIN
-                INSERT INTO history (history_id, product_id, employee_id, client_id, price, quantity, date)
-                SELECT id, product_id, employee_id, client_id, price, quantity, date
-                FROM inserted;
-            END
 
--- update product quantity
-            CREATE TRIGGER updateQuantity
-            ON sales
-            AFTER INSERT
-            AS
-            BEGIN
-                UPDATE p
-                SET p.quantity = p.quantity - i.quantity
-                FROM products p
-                INNER JOIN inserted i ON p.product_id = i.product_id;
-            END
+INSERT INTO Sales (Name, Price, EmployeeId, CustomerId) VALUES
+(N'Football', 35, 1, 1),
+(N'Tennis Racket', 65, 2, 2),
+(N'Running Shoes', 90, 3, 3),
+(N'Basketball', 45, 4, 4),
+(N'Yoga Mat', 20, 5, 5),
+(N'Cycling Helmet', 55, 6, 6),
+(N'Baseball Glove', 60, 7, 7),
+(N'Swimming Goggles', 18, 8, 8),
+(N'Golf Clubs', 350, 9, 9),
+(N'Boxing Gloves', 40, 10, 10);
 
--- archive if quantity is 0
-            CREATE TRIGGER archiveEmpty
-            ON products
-            AFTER UPDATE
-            AS
-            BEGIN
-                INSERT INTO archive (id, name, product, cost, manufacturer, sale, date)
-                SELECT i.product_id, i.product_name, i.product_type, i.cost, i.manufacturer, i.price, GETDATE()
-                FROM inserted i
-                WHERE i.quantity = 0;
-            END
 
--- notify if quantity is 1
-            CREATE TRIGGER checkLast
-            ON products
-            AFTER UPDATE
-            AS
-            BEGIN
-                INSERT INTO last_unit (id, product_id, name, date)
-                SELECT i.product_id, i.product_id, i.product_name, GETDATE()
-                FROM inserted i
-                WHERE i.quantity = 1;
-            END
+GO;
 
--- check duplicate
-            CREATE TRIGGER checkDuplicate
-            ON clients
-            INSTEAD OF INSERT
-            AS
-            BEGIN
-                INSERT INTO clients (id, name, email, phone, gender, discount, newsletter)
-                SELECT id, name, email, phone, gender, discount, newsletter
-                FROM inserted i
-                WHERE NOT EXISTS (SELECT 1 FROM clients c WHERE c.name = i.name AND c.email = i.email);
-            END
+-- Check product existence and update quantity instead of adding duplicate
+CREATE TRIGGER Checkgoodsexists
+ON Goods
+INSTEAD OF INSERT
+AS
+BEGIN
+    UPDATE G
+    SET G.Amount = G.Amount + I.Amount FROM Goods G
+    INNER JOIN inserted I ON G.Name = I.Name
+        AND G.Type = I.Type
+        AND G.Costprice = I.Costprice
+        AND G.Manufacturer = I.Manufacturer
+        AND G.Sellingprice = I.Sellingprice;
 
--- prevent deletion
-            CREATE TRIGGER clientDelete
-            ON clients
-            INSTEAD OF DELETE
-            AS
-            BEGIN
-                RETURN;
-            END
+    INSERT INTO Goods (Name, Type, Amount, Costprice, Manufacturer, Sellingprice)
+    SELECT Name, Type, Amount, Costprice, Manufacturer, Sellingprice FROM inserted I
+    WHERE NOT EXISTS ( SELECT 1 FROM Goods G  WHERE G.Name = I.Name
+        AND G.Type = I.Type
+        AND G.Costprice = I.Costprice
+        AND G.Manufacturer = I.Manufacturer
+        AND G.Sellingprice = I.Sellingprice);
+END
 
--- prevent deletion of old employees
-            CREATE TRIGGER EmployeeOldDelete
-            ON employees
-            INSTEAD OF DELETE
-            AS
-            BEGIN
-                DELETE FROM employees
-                WHERE id IN (SELECT id FROM deleted WHERE date >= N'2015-01-01');
-            END
 
--- prevent banned manufacturer
-            CREATE TRIGGER bannedManufacturer
-            ON products
-            INSTEAD OF INSERT
-            AS
-            BEGIN
-                INSERT INTO products (product_id, product_name, product_type, quantity, cost, manufacturer, price)
-                SELECT product_id, product_name, product_type, quantity, cost, manufacturer, price
-                FROM inserted
-                WHERE manufacturer <> N'Спорт сонце штанга';
-            END
+
+-- Move dismissed employee to archive
+CREATE TRIGGER Movetoarchive
+ON Employees
+INSTEAD OF DELETE
+AS
+BEGIN
+    INSERT INTO Employeesarchive (Id, Fullname, Dateofhire, Sex, Salary, Dismissaldate)
+    SELECT Id, Fullname, Dateofhire, Sex, Salary, GETDATE() FROM deleted;
+
+    DELETE FROM Employees WHERE Id IN (SELECT Id FROM deleted);
+END
+
+
+
+--  Prevent adding salesman if count exceeds 6
+CREATE TRIGGER Checksalesmanlimit
+ON Employees
+INSTEAD OF INSERT
+AS
+BEGIN
+    IF (SELECT COUNT(*) FROM Employees) + (SELECT COUNT(*) FROM inserted) <= 6
+    BEGIN
+    INSERT INTO Employees (Fullname, Dateofhire, Sex, Salary)
+    SELECT Fullname, Dateofhire, Sex, Salary FROM inserted;
+END
+END
