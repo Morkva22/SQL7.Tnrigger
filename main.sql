@@ -1,179 +1,166 @@
 USE master
 GO;
 
-IF DB_ID('SportsShop') IS NOT NULL
-    DROP DATABASE SportsShop
-
-    CREATE DATABASE SportsShop
-GO
-IF DB_ID('SportsShop') IS NULL
-    CREATE DATABASE SportsShop
-GO
-
-USE SportsShop
+IF DB_ID('MusicCollection') IS NOT NULL
+    DROP DATABASE MusicCollection
+    CREATE DATABASE MusicCollection
+GO;
+IF DB_ID('MusicCollection') IS NULL
+    CREATE DATABASE MusicCollection
 GO;
 
--- Create a table with employees
-CREATE TABLE Employees (
-    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
-    FullName NVARCHAR(256) NOT NULL UNIQUE,
-    DateOfHire DATE NOT NULL,
-    Sex BINARY NOT NULL,
-    Salary INT NOT NULL DEFAULT (0),
-
-    CONSTRAINT CHK_Employees_FullName CHECK (FullName <> ''),
-    CONSTRAINT CHK_Employees_Salary CHECK (Salary >= 0)
-);
-
--- Create a table with customers
-CREATE TABLE Customers (
-    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
-    FullName NVARCHAR(256) NOT NULL UNIQUE,
-    Phone NVARCHAR(10) NOT NULL UNIQUE,
-    Email NVARCHAR(512) NOT NULL UNIQUE,
-    Sex BINARY NOT NULL,
-    OrderHistory NVARCHAR(MAX),
-    DiscountPercentage INT NOT NULL DEFAULT (0),
-    isSubscribed BINARY NOT NULL,
-
-    CONSTRAINT CHK_Customers_FullName CHECK (FullName <> ''),
-    CONSTRAINT CHK_Customers_Phone CHECK (LEN(Phone) = 10),
-    CONSTRAINT CHK_Customers_DiscountPercentage CHECK (DiscountPercentage >= 0 AND DiscountPercentage <= 100)
-);
-
--- Create a table with goods
-CREATE TABLE Goods (
-    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
-    Name NVARCHAR(256) NOT NULL,
-    Type NVARCHAR(100) NOT NULL,
-    Amount INT NOT NULL,
-    CostPrice INT NOT NULL,
-    Manufacturer NVARCHAR(MAX) NOT NULL,
-    SellingPrice INT NOT NULL,
-
-    CONSTRAINT CHK_Goods_Name CHECK (Name <> ''),
-    CONSTRAINT CHK_Goods_Type CHECK (Type <> ''),
-    CONSTRAINT CHK_Goods_Manufacturer CHECK (Manufacturer <> '')
-);
-
--- Create a table with sales
-CREATE TABLE Sales (
-    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
-    Name NVARCHAR(MAX) NOT NULL,
-    Price INT NOT NULL,
-    EmployeeId INT NOT NULL,
-    CustomerId INT NOT NULL,
-
-    CONSTRAINT CHK_Sales_Name CHECK (Name <> ''),
-
-    CONSTRAINT FK_Sales_Employees FOREIGN KEY (EmployeeId) REFERENCES Employees(Id),
-    CONSTRAINT FK_Sales_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id)
-);
-
-
-
-INSERT INTO Employees (FullName, DateOfHire, Sex, Salary) VALUES
-(N'John Smith', '2020-01-15', 1, 4000),
-(N'Emily Davis', '2019-03-22', 0, 4200),
-(N'Michael Brown', '2021-07-10', 1, 3900),
-(N'Sarah Wilson', '2018-11-05', 0, 4500),
-(N'David Lee', '2022-02-28', 1, 4100),
-(N'Jessica Miller', '2020-09-17', 0, 4300),
-(N'Chris Johnson', '2017-06-30', 1, 4700),
-(N'Laura Clark', '2019-12-12', 0, 4000),
-(N'James Lewis', '2021-04-03', 1, 3800),
-(N'Olivia Walker', '2022-08-19', 0, 4400);
-
-
-INSERT INTO Customers (FullName, Phone, Email, Sex, OrderHistory, DiscountPercentage, isSubscribed) VALUES
-(N'Alice Green', N'1234567890', N'alice.green@email.com', 0, N'Football, Shoes', 10, 1),
-(N'Brian White', N'2345678901', N'brian.white@email.com', 1, N'Basketball', 5, 0),
-(N'Chloe Harris', N'3456789012', N'chloe.harris@email.com', 0, N'Yoga Mat, Gloves', 15, 1),
-(N'Daniel Young', N'4567890123', N'daniel.young@email.com', 1, N'Helmet', 0, 0),
-(N'Ella King', N'5678901234', N'ella.king@email.com', 0, N'Golf Clubs', 20, 1),
-(N'Frank Scott', N'6789012345', N'frank.scott@email.com', 1, N'Racket, Shoes', 8, 1),
-(N'Grace Adams', N'7890123456', N'grace.adams@email.com', 0, N'Goggles', 12, 0),
-(N'Henry Baker', N'8901234567', N'henry.baker@email.com', 1, N'Football', 0, 1),
-(N'Ivy Carter', N'9012345678', N'ivy.carter@email.com', 0, N'Basketball, Mat', 18, 1),
-(N'Jack Evans', N'0123456789', N'jack.evans@email.com', 1, N'Gloves', 7, 0);
-
-
-INSERT INTO Goods (Name, Type, Amount, CostPrice, Manufacturer, SellingPrice) VALUES
-(N'Football', N'Sports Equipment', 50, 20, N'Adidas', 35),
-(N'Tennis Racket', N'Sports Equipment', 30, 40, N'Wilson', 65),
-(N'Running Shoes', N'Footwear', 100, 60, N'Nike', 90),
-(N'Basketball', N'Sports Equipment', 40, 25, N'Spalding', 45),
-(N'Yoga Mat', N'Fitness', 70, 10, N'Reebok', 20),
-(N'Cycling Helmet', N'Accessories', 25, 30, N'Giro', 55),
-(N'Baseball Glove', N'Sports Equipment', 15, 35, N'Rawlings', 60),
-(N'Swimming Goggles', N'Accessories', 80, 8, N'Speedo', 18),
-(N'Golf Clubs', N'Sports Equipment', 10, 200, N'Callaway', 350),
-(N'Boxing Gloves', N'Fitness', 35, 22, N'Everlast', 40);
-
-
-INSERT INTO Sales (Name, Price, EmployeeId, CustomerId) VALUES
-(N'Football', 35, 1, 1),
-(N'Tennis Racket', 65, 2, 2),
-(N'Running Shoes', 90, 3, 3),
-(N'Basketball', 45, 4, 4),
-(N'Yoga Mat', 20, 5, 5),
-(N'Cycling Helmet', 55, 6, 6),
-(N'Baseball Glove', 60, 7, 7),
-(N'Swimming Goggles', 18, 8, 8),
-(N'Golf Clubs', 350, 9, 9),
-(N'Boxing Gloves', 40, 10, 10);
-
-
+USE MusicCollection
 GO;
 
--- Check product existence and update quantity instead of adding duplicate
-CREATE TRIGGER Checkgoodsexists
-ON Goods
+-- Create a table with styles
+CREATE TABLE Styles (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Name NVARCHAR(64) NOT NULL UNIQUE,
+
+    CONSTRAINT CHK_Styles_Name CHECK (Name <> '')
+);
+
+-- Create a table with artists
+CREATE TABLE Artists (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Name NVARCHAR(64) NOT NULL UNIQUE,
+
+    CONSTRAINT CHK_Artists_Name CHECK (Name <> '')
+);
+
+-- Create a table with publishers
+CREATE TABLE Publishers (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Name NVARCHAR(64) NOT NULL UNIQUE,
+    Country NVARCHAR(64) NOT NULL,
+
+    CONSTRAINT CHK_Publishers_Name CHECK (Name <> ''),
+    CONSTRAINT CHK_Publishers_Country CHECK (Country <> '')
+);
+
+-- Create a table with music cds
+CREATE TABLE MusicCds (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Title NVARCHAR(256) NOT NULL,
+    ReleaseDate DATE NOT NULL DEFAULT (GETDATE()),
+    PublisherId INT NOT NULL,
+    StyleId INT NOT NULL,
+    ArtistId INT NOT NULL,
+
+    CONSTRAINT CHK_MusicCd_Title CHECK (Title <> ''),
+
+    CONSTRAINT FK_MusicCd_Styles FOREIGN KEY (StyleId) REFERENCES Styles(Id),
+    CONSTRAINT FK_MusicCd_Artists FOREIGN KEY (ArtistId) REFERENCES Artists(Id),
+    CONSTRAINT FK_MusicCd_Publishers FOREIGN KEY (PublisherId) REFERENCES Publishers(Id)
+);
+
+-- Create a table with songs
+CREATE TABLE Songs (
+    Id INT PRIMARY KEY NOT NULL IDENTITY (1, 1),
+    Title NVARCHAR(256) NOT NULL,
+    SongDuration INT NOT NULL,
+    StyleId INT NOT NULL,
+    ArtistId INT NOT NULL,
+    MusicCdId INT NOT NULL,
+
+    CONSTRAINT CHK_Songs_Title CHECK (Title <> ''),
+    CONSTRAINT CHK_Songs_SongDuration CHECK (SongDuration > 0),
+
+    CONSTRAINT FK_Songs_Styles FOREIGN KEY (StyleId) REFERENCES Styles(Id),
+    CONSTRAINT FK_Songs_Artists FOREIGN KEY (ArtistId) REFERENCES Artists(Id),
+    CONSTRAINT FK_Songs_MusicCds FOREIGN KEY (MusicCdId) REFERENCES MusicCds(Id)
+);
+
+
+
+
+INSERT INTO Styles (Name) VALUES
+('Rock'),
+('Pop');
+
+
+INSERT INTO Artists (Name) VALUES
+('The Rolling Stones'),
+('Madonna'),
+('Queen'),
+('Michael Jackson');
+
+
+INSERT INTO Publishers (Name, Country) VALUES
+('Universal Music Group', 'United States'),
+('Sony Music', 'Japan'),
+('EMI Records', 'United Kingdom'),
+('Warner Music', 'United States');
+
+
+INSERT INTO MusicCds (Title, ReleaseDate, PublisherId, StyleId, ArtistId) VALUES
+('Rock Classics', '2020-01-15', 1, 1, 1),
+('Pop Essentials', '2021-05-20', 3, 2, 2);
+
+
+INSERT INTO Songs (Title, SongDuration, StyleId, ArtistId, MusicCdId) VALUES
+('Paint It Black', 180, 1, 1, 1),
+('Bohemian Rhapsody', 355, 1, 3, 1),
+('Start Me Up', 195, 1, 1, 1),
+('Beat It (Rock Cover)', 225, 1, 4, 1),
+('Radio Ga Ga', 240, 1, 3, 1);
+
+
+INSERT INTO Songs (Title, SongDuration, StyleId, ArtistId, MusicCdId) VALUES
+('Vogue', 200, 2, 2, 2),
+('Thriller', 358, 2, 4, 2),
+('Like A Virgin', 220, 2, 2, 2),
+('I Want To Break Free', 215, 2, 3, 2),
+('Billie Jean', 230, 2, 4, 2);
+
+
+
+CREATE TRIGGER PreventDuplicateAlbums
+ON MusicCds
 INSTEAD OF INSERT
 AS
 BEGIN
-    UPDATE G
-    SET G.Amount = G.Amount + I.Amount FROM Goods G
-    INNER JOIN inserted I ON G.Name = I.Name
-        AND G.Type = I.Type
-        AND G.Costprice = I.Costprice
-        AND G.Manufacturer = I.Manufacturer
-        AND G.Sellingprice = I.Sellingprice;
 
-    INSERT INTO Goods (Name, Type, Amount, Costprice, Manufacturer, Sellingprice)
-    SELECT Name, Type, Amount, Costprice, Manufacturer, Sellingprice FROM inserted I
-    WHERE NOT EXISTS ( SELECT 1 FROM Goods G  WHERE G.Name = I.Name
-        AND G.Type = I.Type
-        AND G.Costprice = I.Costprice
-        AND G.Manufacturer = I.Manufacturer
-        AND G.Sellingprice = I.Sellingprice);
-END
+INSERT INTO MusicCds (Title, ReleaseDate, PublisherId, StyleId, ArtistId)
+SELECT i.Title, i.ReleaseDate, i.PublisherId, i.StyleId, i.ArtistId FROM inserted i
+LEFT JOIN MusicCds mc ON mc.Title = i.Title  AND mc.ArtistId = i.ArtistId AND mc.ReleaseDate = i.ReleaseDate WHERE mc.Id IS NULL;
+END;
+GO;
 
-
-
--- Move dismissed employee to archive
-CREATE TRIGGER Movetoarchive
-ON Employees
+CREATE TRIGGER PreventBeatlesDeletion
+ON MusicCds
 INSTEAD OF DELETE
 AS
 BEGIN
-    INSERT INTO Employeesarchive (Id, Fullname, Dateofhire, Sex, Salary, Dismissaldate)
-    SELECT Id, Fullname, Dateofhire, Sex, Salary, GETDATE() FROM deleted;
+    DELETE FROM Songs  WHERE MusicCdId IN ( SELECT d.Id FROM deleted d
+JOIN Artists a ON d.ArtistId = a.Id WHERE a.Name <> 'The Beatles');
+DELETE FROM MusicCds
+WHERE Id IN ( SELECT d.Id FROM deleted d
+JOIN Artists a ON d.ArtistId = a.Id WHERE a.Name <> 'The Beatles');
+END;
+GO;
 
-    DELETE FROM Employees WHERE Id IN (SELECT Id FROM deleted);
-END
+CREATE TRIGGER ArchiveDeletedCds
+ON MusicCds
+AFTER DELETE
+AS
+BEGIN
+    INSERT INTO ArchivedCds (Id, Title, ReleaseDate, PublisherId, StyleId, ArtistId)
+    SELECT Id, Title, ReleaseDate, PublisherId, StyleId, ArtistId FROM deleted;
+END;
+GO;
 
 
-
---  Prevent adding salesman if count exceeds 6
-CREATE TRIGGER Checksalesmanlimit
-ON Employees
+CREATE TRIGGER PreventDarkPowerPop
+ON MusicCds
 INSTEAD OF INSERT
 AS
 BEGIN
-    IF (SELECT COUNT(*) FROM Employees) + (SELECT COUNT(*) FROM inserted) <= 6
-    BEGIN
-    INSERT INTO Employees (Fullname, Dateofhire, Sex, Salary)
-    SELECT Fullname, Dateofhire, Sex, Salary FROM inserted;
-END
-END
+INSERT INTO MusicCds (Title, ReleaseDate, PublisherId, StyleId, ArtistId)
+SELECT i.Title, i.ReleaseDate, i.PublisherId, i.StyleId, i.ArtistId FROM inserted i
+JOIN Styles s ON i.StyleId = s.Id WHERE s.Name <> 'Dark Power Pop';
+END;
+GO;
+
+
+
